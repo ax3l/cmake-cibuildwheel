@@ -1,0 +1,72 @@
+name: wheels
+
+on: [push, pull_request]
+
+jobs:
+  build_wheels:
+    name: Build wheel on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-18.04]  # windows-2019, macos-10.15
+
+    steps:
+#    - uses: actions/checkout@v2
+#      with:
+#        path: 'src'
+#        ref: '0.12.0-alpha'
+
+    - uses: actions/checkout@v2
+#      with:
+#        path: 'src/.github/'
+
+    - uses: actions/setup-python@v1
+      name: Install Python
+      with:
+        python-version: '3.7'
+
+    - name: Get Sources
+      run: |
+        python -m pip install scikit-build
+        python -m pip download --no-binary cmake cmake
+        tar -xf cmake-*.tar.gz
+        rm cmake-*.tar.gz
+        mv cmake-* src
+        mv library_builders.sh src/
+
+    - name: Install cibuildwheel
+      run: |
+        python -m pip install cibuildwheel==1.5.5
+
+    - name: Build wheel
+      env:
+        # (1,2) Skip building for Python 2.7 on all platforms
+        # (3) CMake/Pybind11 scripts not clever enough to build 32bit Windows with 64bit compiler
+        #      *-win32
+        CIBW_SKIP: cp27-* pp27-*
+        # Install dependencies on Linux and OSX
+        CIBW_BEFORE_BUILD: bash -x library_builders.sh
+        # some environment vars
+        # CIBW_ENVIRONMENT: ABC='ON' DEF='OFF'
+        # C++11 & 14 support in macOS 10.9+
+        # C++17 support in macOS 10.13+/10.14+
+        #   https://cibuildwheel.readthedocs.io/en/stable/cpp_standards/#macos-and-deployment-target-versions
+        MACOSX_DEPLOYMENT_TARGET: 10.9
+      run: |
+        cd src
+        python -m cibuildwheel --output-dir ../wheelhouse
+
+    - name: Publish on pypi.org
+#      if: github.event_name == 'push' && github.repository == 'ax3l/cmake-cibuildwheel' && github.ref == 'refs/heads/wheels'
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.pypa_gh_action_upload }}
+      run: |
+        python -m pip install -U twine
+        python -m twine upload --repository testpypi --skip-existing wheelhouse/*
+
+    - uses: actions/upload-artifact@v1
+      name: Publish as GitHub artifact
+      with:
+        name: wheels
+        path: ./wheelhouse

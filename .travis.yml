@@ -1,0 +1,71 @@
+language: python
+
+branches:
+  only:
+  - wheels
+
+env:
+  global:
+    # - OPENPMD_GIT_REF="0.12.0-alpha"
+
+    # (1,2) Skip building for Python 2.7 on all platforms
+    # (3) reduce build times by skipping Python 3.5
+    - CIBW_SKIP="cp27-* pp27-* cp35-*"
+    # Install dependencies on Linux and OSX
+    - CIBW_BEFORE_BUILD="bash -x library_builders.sh"
+    # for the openPMD-api build, CMake shall search for
+    # static dependencies of HDF5 and ADIOS1 (see setup.py)
+    # - CIBW_ENVIRONMENT="HDF5_USE_STATIC_LIBRARIES='ON' ADIOS_USE_STATIC_LIBS='ON'"
+
+jobs:
+  include:
+    # perform a linux ARMv8 build
+    # blocked by https://github.com/scikit-build/cmake-python-distributions/issues/96
+    #            https://github.com/pypa/manylinux/issues/544
+    - services: docker
+      arch: arm64
+      env:
+        - CIBW_BUILD="*_aarch64"
+
+    # perform a linux PPC64LE build
+    # blocked by https://github.com/pypa/auditwheel/issues/36
+    #            https://github.com/pypa/auditwheel/pull/213
+    - services: docker
+      arch: ppc64le
+      env:
+       - CIBW_BUILD="*_ppc64le"
+
+    # perform a linux S390X build
+    # blocked by https://github.com/GTkorvo/dill/issues/15
+    - services: docker
+      arch: s390x
+      env:
+        - CIBW_BUILD="*_s390x"
+
+    # and a build for old macOS versions (10.13 with xcode9.4.1 ~2017)
+    #- os: osx
+    #  osx_image: xcode9.4
+    #  language: shell
+    #  python: 3.6
+
+install:
+  # - git clone --branch ${OPENPMD_GIT_REF} --depth 1 https://github.com/openPMD/openPMD-api.git src
+  - python3 -m pip install scikit-build
+  - python3 -m pip download --no-binary cmake cmake
+  - tar -xf cmake-*.tar.gz
+  - rm cmake-*.tar.gz
+  - mv cmake-* src
+  - mv library_builders.sh src/
+  - python3 -m pip install cibuildwheel==1.5.5
+
+# build wheel
+script:
+  - cd src
+  - travis_wait 50 python3 -m cibuildwheel --output-dir ../wheelhouse
+  - cd ..
+
+after_success:
+  - if [[ "$TRAVIS_EVENT_TYPE" == "push" ]]; then
+        python3 -m pip install -U twine;
+        python3 -m twine upload --repository testpypi --skip-existing wheelhouse/*;
+    fi
