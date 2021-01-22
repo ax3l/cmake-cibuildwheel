@@ -36,14 +36,13 @@ jobs:
 
     - name: Install cibuildwheel
       run: |
-        python -m pip install cibuildwheel==1.5.5
+        python -m pip install cibuildwheel==1.7.1
 
     - name: Build wheel
       env:
         # (1,2) Skip building for Python 2.7 on all platforms
-        # (3) CMake/Pybind11 scripts not clever enough to build 32bit Windows with 64bit compiler
-        #      *-win32
-        CIBW_SKIP: cp27-* pp27-*
+        # (3) reduce build times by skipping Python 3.5 & 3.6 & 3.7
+        CIBW_SKIP: cp27-* pp27-* cp35-* cp36-* cp37-*
         # Install dependencies on Linux and OSX
         CIBW_BEFORE_BUILD: bash -x library_builders.sh
         # some environment vars
