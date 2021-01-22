@@ -42,7 +42,8 @@ jobs:
       env:
         # (1,2) Skip building for Python 2.7 on all platforms
         # (3) reduce build times by skipping Python 3.5 & 3.6 & 3.7
-        CIBW_SKIP: cp27-* pp27-* cp35-* cp36-* cp37-*
+        # (4) skip PyPy for now because of semi-broken images (yum fails)
+        CIBW_SKIP: cp27-* pp27-* cp35-* cp36-* cp37-* pp*
         # Install dependencies on Linux and OSX
         CIBW_BEFORE_BUILD: bash -x library_builders.sh
         # some environment vars
