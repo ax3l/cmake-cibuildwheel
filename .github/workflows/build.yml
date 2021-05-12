@@ -52,6 +52,9 @@ jobs:
         # C++17 support in macOS 10.13+/10.14+
         #   https://cibuildwheel.readthedocs.io/en/stable/cpp_standards/#macos-and-deployment-target-versions
         MACOSX_DEPLOYMENT_TARGET: 10.9
+        # https://github.com/joerick/cibuildwheel/issues/442#issuecomment-705272500
+        # https://github.com/pypa/pip/issues/5735
+        PIP_NO_BUILD_ISOLATION: no
       run: |
         cd src
         python -m cibuildwheel --output-dir ../wheelhouse
