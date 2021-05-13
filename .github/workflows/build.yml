@@ -8,7 +8,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-18.04]  # windows-2019, macos-10.15
+        os: [ubuntu-18.04, macos-10.15]  # windows-2019
 
     steps:
 #    - uses: actions/checkout@v2
@@ -44,8 +44,10 @@ jobs:
         # (3) reduce build times by skipping Python 3.5 & 3.6 & 3.7
         # (4) skip PyPy for now because of semi-broken images (yum fails)
         CIBW_SKIP: cp27-* pp27-* cp35-* cp36-* cp37-* pp*
-        # Install dependencies on Linux and OSX
-        CIBW_BEFORE_BUILD: bash -x library_builders.sh
+        # Install dependencies
+        CIBW_BEFORE_BUILD_LINUX: bash -x library_builders.sh
+        CIBW_BEFORE_BUILD_MACOS: bash -x library_builders.sh
+        CIBW_BEFORE_BUILD_WINDOWS: 'cmd /E:ON /V:ON /C library_builders.bat'
         # some environment vars
         # CIBW_ENVIRONMENT: ABC='ON' DEF='OFF'
         # C++11 & 14 support in macOS 10.9+
