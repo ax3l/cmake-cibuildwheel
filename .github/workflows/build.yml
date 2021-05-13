@@ -58,6 +58,7 @@ jobs:
 
     - name: Publish on pypi.org
 #      if: github.event_name == 'push' && github.repository == 'ax3l/cmake-cibuildwheel' && github.ref == 'refs/heads/wheels'
+      if: false  # skip because we are not yet uploading
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.pypa_gh_action_upload }}

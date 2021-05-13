@@ -56,8 +56,8 @@ script:
   - travis_wait 50 python3 -m cibuildwheel --output-dir ../wheelhouse
   - cd ..
 
-after_success:
-  - if [[ "$TRAVIS_EVENT_TYPE" == "push" ]]; then
-        python3 -m pip install -U twine;
-        python3 -m twine upload --repository testpypi --skip-existing wheelhouse/*;
-    fi
+#after_success:
+#  - if [[ "$TRAVIS_EVENT_TYPE" == "push" ]]; then
+#        python3 -m pip install -U twine;
+#        python3 -m twine upload --repository testpypi --skip-existing wheelhouse/*;
+#    fi
