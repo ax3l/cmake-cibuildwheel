@@ -38,10 +38,15 @@ jobs:
        - CIBW_BUILD="*_ppc64le"
 
     # perform a linux S390X build
-    - services: docker
-      arch: s390x
-      env:
-        - CIBW_BUILD="*_s390x"
+    # $ yum -y install glibc-static openssl-devel tar
+    # Error:  Multilib version problems found. This often means that the root
+    #   cause is something else and multilib version checking is just
+    #   pointing out that there is a problem.
+    #   Protected multilib versions: zlib-1.2.7-19.el7_9.s390 != zlib-1.2.11-21.el7.s390x
+    #- services: docker
+    #  arch: s390x
+    #  env:
+    #    - CIBW_BUILD="*_s390x"
 
 install:
   # - git clone --branch ${OPENPMD_GIT_REF} --depth 1 https://github.com/openPMD/openPMD-api.git src
