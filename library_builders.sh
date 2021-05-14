@@ -9,6 +9,15 @@ CPU_COUNT="${CPU_COUNT:-2}"
 function install_buildessentials {
     if [ -e buildessentials-stamp ]; then return; fi
 
+    # ninja build tool
+    if [ "$(uname -s)" = "Darwin" ]
+    then
+        set +e
+        brew update
+        brew install ninja
+        set -e
+    fi
+
     # static libc, tar tool
     if [ "$(uname -s)" = "Linux" ]
     then

@@ -10,6 +10,7 @@ Although [an efforts was made](https://github.com/scikit-build/cmake-python-dist
 - Linux aarch64 (arm64) binaries for Cloud systems (and HPC systems)
 
 Public cloud infrastructure such as Travis-CI provides resources for natively building Linux binaries for `arm64`, `ppc64le` and `s390x`.
+Furthermore, cibuildwheel supports cross-compilation from `x86_64` runners.
 Drone.io also provides native `arm64` resources.
 
 Lucky for us, [cibuildwheel](https://github.com/joerick/cibuildwheel) dramatically simplifies the process to build wheels on public CI and for various platforms, including cross-compiles for macOS on ARM.
