@@ -44,6 +44,10 @@ jobs:
         # (3) reduce build times by skipping Python 3.5 & 3.6 & 3.7
         # (4) skip PyPy for now because of semi-broken images (yum fails)
         CIBW_SKIP: cp27-* pp27-* cp35-* cp36-* cp37-* pp*
+        # Apple Silicon and universal2 wheels (Pip 20.3+/20.6+)
+        CIBW_ARCHS_MACOS: x86_64 arm64 universal2
+        # Skip testing on emulated and cross-compiled architectures
+        CIBW_TEST_SKIP: '*-macosx_arm64 *-macosx_universal2:arm64 *-manylinux_{aarch64,ppc64le,s390x}'
         # Install dependencies
         CIBW_BEFORE_BUILD_LINUX: bash -x library_builders.sh
         CIBW_BEFORE_BUILD_MACOS: bash -x library_builders.sh
@@ -53,7 +57,8 @@ jobs:
         # C++11 & 14 support in macOS 10.9+
         # C++17 support in macOS 10.13+/10.14+
         #   https://cibuildwheel.readthedocs.io/en/stable/cpp_standards/#macos-and-deployment-target-versions
-        MACOSX_DEPLOYMENT_TARGET: 10.9
+        # CMake needs 10.10+
+        MACOSX_DEPLOYMENT_TARGET: 10.10
         # https://github.com/joerick/cibuildwheel/issues/442#issuecomment-705272500
         # https://github.com/pypa/pip/issues/5735
         PIP_NO_BUILD_ISOLATION: no
