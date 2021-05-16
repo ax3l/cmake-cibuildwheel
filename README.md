@@ -14,3 +14,7 @@ Furthermore, cibuildwheel supports cross-compilation from `x86_64` runners.
 Drone.io also provides native `arm64` resources.
 
 Lucky for us, [cibuildwheel](https://github.com/joerick/cibuildwheel) dramatically simplifies the process to build wheels on public CI and for various platforms, including cross-compiles for macOS on ARM.
+
+## Update
+
+Upstreaming & redesign ongoing in https://github.com/scikit-build/cmake-python-distributions/pull/139
